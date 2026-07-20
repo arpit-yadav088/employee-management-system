@@ -29,10 +29,10 @@ const getAllEmployees = (callback) => {
 
 const getEmployeeById = (id, callback) => {
 
-    const sql = `
-        SELECT *
-        FROM employees
-        WHERE id = ?
+  const sql = `
+    SELECT *
+    FROM employees
+    WHERE id = ?
     `;
     db.query(sql, [id], callback);
 };
@@ -67,5 +67,42 @@ const deleteEmployee = (id, callback) => {
   db.query(sql, [id], callback);
 };
 
-module.exports = { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, }
+
+const searchEmployees = ( search, callback ) => {
+  const sql = `SELECT *FROM employees
+  WHERE 
+  name LIKE ?
+  OR email LIKE ?
+  OR department LIKE ?
+  ORDER BY created_at DESC`;
+
+  const keyword = `%${search}%`;
+
+  db.query(
+    sql, [keyword, keyword, keyword],
+    callback
+  );
+};
+
+
+const getEmployeesWithPagination = ( limit, offset, callback ) => {
+
+  const sql = `SELECT * FROM employees 
+  ORDER BY created_at DESC
+    LIMIT ? OFFSET ?`
+
+  db.query(sql, [limit, offset], callback);
+}
+
+
+const getTotalEmployees = (callback) => {
+
+  const sql = `
+    SELECT COUNT(*) AS total
+    FROM employees
+  `;
+  db.query(sql, callback);
+};
+
+module.exports = { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, searchEmployees, getEmployeesWithPagination, getTotalEmployees, }
 

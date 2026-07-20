@@ -1,4 +1,14 @@
-const { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, } = require("../models/employeeModel");
+const { 
+  createEmployee,
+  getAllEmployees, 
+  getEmployeeById, 
+  updateEmployee, 
+  deleteEmployee, 
+  searchEmployees, 
+  getEmployeesWithPagination,
+  getTotalEmployees,
+ } = require("../models/employeeModel");
+
 
 const addEmployee = (req,res) => {
   const {name, email, phone, department, salary} = req.body;
@@ -148,5 +158,76 @@ const removeEmployee = (req, res) => {
   });
 };
 
-module.exports = { addEmployee, getEmployees, getEmployee, editEmployee, removeEmployee, };
+
+const searchEmployee = (req, res) => {
+  const { search } = req.query;
+
+  if(!search) {
+    return res.status(400).json({
+      success: false,
+      message: "Search keyword is requird",
+    });
+  };
+
+  searchEmployees(search, (error, results) => {
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: results.length,
+      employees: results,
+    });
+  });
+};
+
+
+const getEmployeesPagination = (req, res) => {
+  let { page, limit } = req.query;
+
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
+
+  const offset = (page - 1) * limit;
+
+  getTotalEmployees((error, totalResult) => {
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    const totalEmployees = totalResult[0].total;
+    const totalPages = Math.ceil(totalEmployees / limit);
+
+    getEmployeesWithPagination(limit, offset, (error, results) => {
+
+      if (error) {
+        return res.status(500).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        page,
+        limit,
+        totalEmployees,
+        totalPages,
+        employees: results,
+      });
+    });
+  });
+};
+
+
+module.exports = { addEmployee, getEmployees, getEmployee, editEmployee, removeEmployee, searchEmployee, getEmployeesPagination, };
 
