@@ -7,6 +7,8 @@ const {
   searchEmployees, 
   getEmployeesWithPagination,
   getTotalEmployees,
+  sortEmployees,
+  filterEmployeesByDepartment,
  } = require("../models/employeeModel");
 
 
@@ -228,6 +230,81 @@ const getEmployeesPagination = (req, res) => {
   });
 };
 
+const getSortedEmployees = (req, res) => {
+  let { field, order} = req.query;
 
-module.exports = { addEmployee, getEmployees, getEmployee, editEmployee, removeEmployee, searchEmployee, getEmployeesPagination, };
+  field = field || "created_at";
+  order = order || "DESC";
+
+  const allowedFields = [
+    "name",
+    "email",
+    "department",
+    "salary",
+    "created_at",
+    ]
+    const allowedOrders = ["ASC", "DESC"];
+
+    if (!allowedFields.includes(field)) {
+      return res.status(400).json({
+        success: false,
+        message: "invlaid sort field",
+      });
+    }
+    order = order.toUpperCase();
+
+    if(!allowedOrders.includes(order)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid sort order",
+      });
+    }
+
+    sortEmployees(field, order, (error, results) => {
+      
+      if(error) {
+        return res.status(500).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        count: results.length,
+        employees: results,
+      });
+    });
+};
+
+
+const getEmployeesByDepartment = (req, res) => {
+  const { department } = req.query;
+
+  if (!department) {
+    return res.status(400).json({
+      success: false,
+      message: "Department is required",
+    });
+  }
+
+  filterEmployeesByDepartment(department, (error, results) => {
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: results.length,
+      employees: results,
+    });
+  });
+};
+
+
+module.exports = { addEmployee, getEmployees, getEmployee, editEmployee, removeEmployee, searchEmployee, getEmployeesPagination, getSortedEmployees, getEmployeesByDepartment, };
 

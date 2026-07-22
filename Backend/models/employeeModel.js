@@ -104,5 +104,21 @@ const getTotalEmployees = (callback) => {
   db.query(sql, callback);
 };
 
-module.exports = { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, searchEmployees, getEmployeesWithPagination, getTotalEmployees, }
 
+const sortEmployees = (field, order, callback) => {
+  const sql = `SELECT * FROM employees ORDER BY ${field} ${order}`
+
+  db.query(sql, callback);
+};
+
+const filterEmployeesByDepartment = (department, callback) => {
+
+  const sql = `
+    SELECT *   FROM employees
+    WHERE department = ?
+    ORDER BY created_at DESC
+  `;
+  db.query(sql, [department], callback);
+};
+
+module.exports = { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, searchEmployees, getEmployeesWithPagination, getTotalEmployees, sortEmployees, filterEmployeesByDepartment, };
