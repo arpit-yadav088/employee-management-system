@@ -1,44 +1,46 @@
 const db = require("../config/db");
 
-const createEmployee = (
+const createEmployee = async (
   name,
   email,
   phone,
   department,
-  salary,
-  callback
+  salary
 ) => {
 
   const sql = `INSERT INTO employees
   (name, email, phone, department, salary)
   VALUES (?,?,?,?,?)`;
-  db.query(
-    sql, [name, email, phone, department, salary],callback
+  const [result] = await db.query(
+    sql, [name, email, phone, department, salary]
   );
+  return result;
 };
 
 
 
-const getAllEmployees = (callback) => {
+const getAllEmployees = async () => {
    
   const sql = `SELECT * FROM employees ORDER BY created_at DESC`;
 
-  db.query(sql, callback);
+  const [rows] = await db.query(sql);
+  return rows;
 };
 
 
-const getEmployeeById = (id, callback) => {
+const getEmployeeById = async (id) => {
 
   const sql = `
     SELECT *
     FROM employees
     WHERE id = ?
     `;
-    db.query(sql, [id], callback);
+    const [rows] = await db.query(sql, [id]);
+    return rows[0];
 };
 
 
-const updateEmployee = ( id, name, email, phone, department, salary, callback ) => {
+const updateEmployee = async ( id, name, email, phone, department, salary ) => {
   
   const sql = `UPDATE employees 
   set 
@@ -50,25 +52,26 @@ const updateEmployee = ( id, name, email, phone, department, salary, callback ) 
   WHERE id = ?
   `;
 
-   db.query(
-      sql,
-        [name, email, phone, department, salary, id],
-        callback
+   const [result] = await db.query( sql, [name, email, phone, department, salary, id]
     );
-}
+
+    return result;
+};
 
 
-const deleteEmployee = (id, callback) => {
+const deleteEmployee = async (id) => {
 
   const sql = `
     DELETE FROM employees
     WHERE id = ?
   `;
-  db.query(sql, [id], callback);
+  const [result] = await db.query(sql, [id]);
+
+  return result;
 };
 
 
-const searchEmployees = ( search, callback ) => {
+const searchEmployees = async ( search ) => {
   const sql = `SELECT *FROM employees
   WHERE 
   name LIKE ?
@@ -78,47 +81,59 @@ const searchEmployees = ( search, callback ) => {
 
   const keyword = `%${search}%`;
 
-  db.query(
+  const [rows] = await db.query(
     sql, [keyword, keyword, keyword],
-    callback
   );
+
+  return rows;
 };
 
 
-const getEmployeesWithPagination = ( limit, offset, callback ) => {
+const getEmployeesWithPagination = async ( limit, offset ) => {
 
   const sql = `SELECT * FROM employees 
   ORDER BY created_at DESC
     LIMIT ? OFFSET ?`
 
-  db.query(sql, [limit, offset], callback);
+  const [rows] = await db.query(sql, [limit, offset]);
+  return rows;
 }
 
 
-const getTotalEmployees = (callback) => {
+const getTotalEmployees = async() => {
 
   const sql = `
     SELECT COUNT(*) AS total
     FROM employees
   `;
-  db.query(sql, callback);
+  const [rows] = await db.query(sql);
+
+  return rows;
 };
 
 
-const sortEmployees = (field, order, callback) => {
-  const sql = `SELECT * FROM employees ORDER BY ${field} ${order}`
+const sortEmployees = async (field, order) => {
 
-  db.query(sql, callback);
+  const sql = `
+    SELECT *
+    FROM employees
+    ORDER BY ${field} ${order}
+  `;
+
+  const [rows] = await db.query(sql);
+  return rows;
 };
 
-const filterEmployeesByDepartment = (department, callback) => {
+
+const filterEmployeesByDepartment = async (department) => {
 
   const sql = `
     SELECT *   FROM employees
     WHERE department = ?
     ORDER BY created_at DESC
   `;
-  db.query(sql, [department], callback);
+  const [rows] = await db.query(sql, [department]);
+  return rows;
 };
 
 module.exports = { createEmployee, getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, searchEmployees, getEmployeesWithPagination, getTotalEmployees, sortEmployees, filterEmployeesByDepartment, };

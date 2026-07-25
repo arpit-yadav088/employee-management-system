@@ -10,9 +10,10 @@ const createUser = (name, email, hashedPassword, callback) => {
   db.query(sql, [name, email, hashedPassword], callback);
 };
 
-const findUserByEmail = (email, callback) => {
+const findUserByEmail = async (email) => {
   const sql = "SELECT * FROM users WHERE email = ?";
-   db.query(sql, [email], callback);
+   const [rows] = await db.query(sql, [email]);
+   return rows;
 }
 
 module.exports = {

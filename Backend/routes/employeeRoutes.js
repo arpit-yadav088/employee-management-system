@@ -20,8 +20,8 @@ router.get("/pagination", authMiddleware, getEmployeesPagination);
 router.get("/sort", authMiddleware, getSortedEmployees);
 router.get("/filter",authMiddleware, getEmployeesByDepartment
 );
-router.get("/:id", authMiddleware, getEmployee);
 router.get("/", authMiddleware, getEmployees);
+router.get("/:id", authMiddleware, getEmployee);
 router.put("/:id", authMiddleware, editEmployee);
 router.delete("/:id", authMiddleware, removeEmployee);
 

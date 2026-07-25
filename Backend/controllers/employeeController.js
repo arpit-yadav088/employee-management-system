@@ -12,139 +12,132 @@ const {
  } = require("../models/employeeModel");
 
 
-const addEmployee = (req,res) => {
-  const {name, email, phone, department, salary} = req.body;
+const addEmployee = async (req,res) => {
+  try {
+    const {name, email, phone, department, salary} = req.body;
 
-  if ( !name || !email || !phone || !department || !salary ) {
-  return res.status(400).json({
-    success: false,
-    message: "All fields are required",
+    if ( !name || !email || !phone || !department || !salary ) {
+    return res.status(400).json({
+     success: false,
+     message: "All fields are required",
   });
 }
 
-createEmployee(name, email, phone, department, salary, (error, result) => {
+  await createEmployee(name, email, phone, department, salary); 
 
-  if (error) {
+  return res.status(201).json({
+    success: true,
+    message: "Employee Added Successfully",
+  });
+} catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-}
-
-return res.status(201).json({
-    success: true,
-    message: "Employee Added Successfully",
-  });
-}
-)
-}
-
-
-const  getEmployees = (req, res) => {
-  getAllEmployees((error, results) => {
-    
-    if (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    };
-
-    return res.status(200).json({
-      success: true,
-      count: results.length,
-      employees: results,
-    });
-  });
+  }
 };
 
 
 
-const getEmployee =(req, res) => {
-  const { id } = req.params;
-
-  getEmployeeById(id, (error, results) => {
-    if(error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    };
-
-    if(results.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Employee Not Found",
-        });
-    };
+const getEmployees = async (req, res) => {
+  try {
+    const employees = await getAllEmployees();
     return res.status(200).json({
       success: true,
-      message: results[0],
+      count: employees.length,
+      employees,
     });
-  });
-};
-
-
-
-const editEmployee = (req, res) => {
-
-  const { id } = req.params;
-
-  const { name, email, phone, department, salary,
-  } = req.body;
-
-  if (!name || !email || !phone || !department || !salary) {
-    return res.status(400).json({
+  } catch (error) {
+    return res.status(500).json({
       success: false,
-      message: "All fields are required",
+      message: error.message,
     });
   }
-
-  updateEmployee(
-    id,
-    name,
-    email,
-    phone,
-    department,
-    salary,
-    (error, result) => {
-
-      if (error) {
-        return res.status(500).json({
-          success: false,
-          message: error.message,
-        });
-      }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Employee Not Found",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Employee Updated Successfully",
-      });
-
-    }
-  );
-
 };
 
 
-const removeEmployee = (req, res) => {
-  const { id } = req.params;
 
-  deleteEmployee(id, (error, result) => {
+const getEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-    if (error) {
-      return res.status(500).json({
+    const employee = await getEmployeeById(id);
+
+    if (employee.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: error.message,
+        message: "Employee Not Found",
       });
     }
+    return res.status(200).json({
+      success: true,
+      employee: employee[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+     success: false,
+     message: error.message,
+    });
+  }
+};
+
+
+const editEmployee = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const {
+      name,
+      email,
+      phone,
+      department,
+      salary,
+    } = req.body;
+
+    if (!name || !email || !phone || !department || !salary) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const result = await updateEmployee(
+      id,
+      name,
+      email,
+      phone,
+      department,
+      salary
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee Not Found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Employee Updated Successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+
+const removeEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await deleteEmployee(id);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -157,152 +150,151 @@ const removeEmployee = (req, res) => {
       success: true,
       message: "Employee Deleted Successfully",
     });
-  });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
-const searchEmployee = (req, res) => {
-  const { search } = req.query;
+const searchEmployee = async (req, res) => {
+  try {
+    const { search } = req.query;
 
-  if(!search) {
-    return res.status(400).json({
-      success: false,
-      message: "Search keyword is requird",
-    });
-  };
-
-  searchEmployees(search, (error, results) => {
-
-    if (error) {
-      return res.status(500).json({
+    if (!search) {
+      return res.status(400).json({
         success: false,
-        message: error.message,
+        message: "Search keyword is required",
       });
     }
+
+    const employees = await searchEmployees(search);
 
     return res.status(200).json({
       success: true,
-      count: results.length,
-      employees: results,
+      count: employees.length,
+      employees,
     });
-  });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
-const getEmployeesPagination = (req, res) => {
-  let { page, limit } = req.query;
 
-  page = parseInt(page) || 1;
-  limit = parseInt(limit) || 5;
+const getEmployeesPagination = async (req, res) => {
+  try {
+    let { page, limit } = req.query;
 
-  const offset = (page - 1) * limit;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 5;
 
-  getTotalEmployees((error, totalResult) => {
+    const offset = (page - 1) * limit;
 
-    if (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
+    const totalResult = await getTotalEmployees();
 
     const totalEmployees = totalResult[0].total;
     const totalPages = Math.ceil(totalEmployees / limit);
 
-    getEmployeesWithPagination(limit, offset, (error, results) => {
+    const employees = await getEmployeesWithPagination(limit, offset);
 
-      if (error) {
-        return res.status(500).json({
-          success: false,
-          message: error.message,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        page,
-        limit,
-        totalEmployees,
-        totalPages,
-        employees: results,
-      });
+    return res.status(200).json({
+      success: true,
+      page,
+      limit,
+      totalEmployees,
+      totalPages,
+      employees,
     });
-  });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
-const getSortedEmployees = (req, res) => {
-  let { field, order} = req.query;
 
-  field = field || "created_at";
-  order = order || "DESC";
 
-  const allowedFields = [
-    "name",
-    "email",
-    "department",
-    "salary",
-    "created_at",
-    ]
+const getSortedEmployees = async (req, res) => {
+  try {
+    let { field, order } = req.query;
+
+    field = field || "created_at";
+    order = order || "DESC";
+
+    const allowedFields = [
+      "name",
+      "email",
+      "department",
+      "salary",
+      "created_at",
+    ];
+
     const allowedOrders = ["ASC", "DESC"];
 
     if (!allowedFields.includes(field)) {
       return res.status(400).json({
         success: false,
-        message: "invlaid sort field",
+        message: "Invalid sort field",
       });
     }
+
     order = order.toUpperCase();
 
-    if(!allowedOrders.includes(order)) {
+    if (!allowedOrders.includes(order)) {
       return res.status(400).json({
         success: false,
         message: "Invalid sort order",
       });
     }
 
-    sortEmployees(field, order, (error, results) => {
-      
-      if(error) {
-        return res.status(500).json({
-          success: false,
-          message: error.message,
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        count: results.length,
-        employees: results,
-      });
-    });
-};
-
-
-const getEmployeesByDepartment = (req, res) => {
-  const { department } = req.query;
-
-  if (!department) {
-    return res.status(400).json({
-      success: false,
-      message: "Department is required",
-    });
-  }
-
-  filterEmployeesByDepartment(department, (error, results) => {
-
-    if (error) {
-      return res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
+    const employees = await sortEmployees(field, order);
 
     return res.status(200).json({
       success: true,
-      count: results.length,
-      employees: results,
+      count: employees.length,
+      employees,
     });
-  });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+const getEmployeesByDepartment = async (req, res) => {
+  try {
+    const { department } = req.query;
+
+    if (!department) {
+      return res.status(400).json({
+        success: false,
+        message: "Department is required",
+      });
+    }
+
+    const employees = await filterEmployeesByDepartment(department);
+
+    return res.status(200).json({
+      success: true,
+      count: employees.length,
+      employees,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
