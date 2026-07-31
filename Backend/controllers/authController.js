@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
-const { createUser, findUserByEmail } = require("../models/userModel");
+const { createUser, findUserByEmail, findUserById,
+ } = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
 
 const register = async (req, res) => {
@@ -94,4 +95,28 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login, };
+
+const getCurrentUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const users = await findUserById(userId);
+    if (users.length === 0) {
+      return res.status(404).json({
+       success: false,
+       message: "User not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      user: users[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+     success: false,
+     message: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, getCurrentUser,};

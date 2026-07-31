@@ -1,43 +1,40 @@
-const { 
+const {
   createEmployee,
-  getAllEmployees, 
-  getEmployeeById, 
-  updateEmployee, 
-  deleteEmployee, 
-  searchEmployees, 
+  getAllEmployees,
+  getEmployeeById,
+  updateEmployee,
+  deleteEmployee,
+  searchEmployees,
   getEmployeesWithPagination,
   getTotalEmployees,
   sortEmployees,
   filterEmployeesByDepartment,
- } = require("../models/employeeModel");
+} = require("../models/employeeModel");
 
-
-const addEmployee = async (req,res) => {
+const addEmployee = async (req, res) => {
   try {
-    const {name, email, phone, department, salary} = req.body;
+    const { name, email, phone, department, salary } = req.body;
 
-    if ( !name || !email || !phone || !department || !salary ) {
-    return res.status(400).json({
-     success: false,
-     message: "All fields are required",
-  });
-}
+    if (!name || !email || !phone || !department || !salary) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
 
-  await createEmployee(name, email, phone, department, salary); 
+    await createEmployee(name, email, phone, department, salary);
 
-  return res.status(201).json({
-    success: true,
-    message: "Employee Added Successfully",
-  });
-} catch (error) {
+    return res.status(201).json({
+      success: true,
+      message: "Employee Added Successfully",
+    });
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
-
 
 const getEmployees = async (req, res) => {
   try {
@@ -54,8 +51,6 @@ const getEmployees = async (req, res) => {
     });
   }
 };
-
-
 
 const getEmployee = async (req, res) => {
   try {
@@ -75,25 +70,17 @@ const getEmployee = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-     success: false,
-     message: error.message,
+      success: false,
+      message: error.message,
     });
   }
 };
 
-
 const editEmployee = async (req, res) => {
   try {
-
     const { id } = req.params;
 
-    const {
-      name,
-      email,
-      phone,
-      department,
-      salary,
-    } = req.body;
+    const { name, email, phone, department, salary } = req.body;
 
     if (!name || !email || !phone || !department || !salary) {
       return res.status(400).json({
@@ -108,7 +95,7 @@ const editEmployee = async (req, res) => {
       email,
       phone,
       department,
-      salary
+      salary,
     );
 
     if (result.affectedRows === 0) {
@@ -129,9 +116,6 @@ const editEmployee = async (req, res) => {
     });
   }
 };
-
-
-
 
 const removeEmployee = async (req, res) => {
   try {
@@ -158,7 +142,6 @@ const removeEmployee = async (req, res) => {
   }
 };
 
-
 const searchEmployee = async (req, res) => {
   try {
     const { search } = req.query;
@@ -184,8 +167,6 @@ const searchEmployee = async (req, res) => {
     });
   }
 };
-
-
 
 const getEmployeesPagination = async (req, res) => {
   try {
@@ -218,8 +199,6 @@ const getEmployeesPagination = async (req, res) => {
     });
   }
 };
-
-
 
 const getSortedEmployees = async (req, res) => {
   try {
@@ -269,7 +248,6 @@ const getSortedEmployees = async (req, res) => {
   }
 };
 
-
 const getEmployeesByDepartment = async (req, res) => {
   try {
     const { department } = req.query;
@@ -288,7 +266,6 @@ const getEmployeesByDepartment = async (req, res) => {
       count: employees.length,
       employees,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -297,6 +274,46 @@ const getEmployeesByDepartment = async (req, res) => {
   }
 };
 
+const getDashboardStats = async (req, res) => {
+  try {
+    const employees = await getAllEmployees();
 
-module.exports = { addEmployee, getEmployees, getEmployee, editEmployee, removeEmployee, searchEmployee, getEmployeesPagination, getSortedEmployees, getEmployeesByDepartment, };
+    const totalEmployees = employees.length;
 
+    const totalDepartments = [
+      ...new Set(employees.map((emp) => emp.department)),
+    ].length;
+
+    const totalSalary = employees.reduce(
+      (sum, emp) => sum + Number(emp.salary),
+      0,
+    );
+
+    return res.status(200).json({
+      success: true,
+      stats: {
+        totalEmployees,
+        totalDepartments,
+        totalSalary,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  addEmployee,
+  getEmployees,
+  getEmployee,
+  editEmployee,
+  removeEmployee,
+  searchEmployee,
+  getEmployeesPagination,
+  getSortedEmployees,
+  getEmployeesByDepartment,
+  getDashboardStats,
+};

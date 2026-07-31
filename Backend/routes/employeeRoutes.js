@@ -1,25 +1,26 @@
 const express = require("express");
-const { 
-  addEmployee, 
+const {
+  getDashboardStats,
+  addEmployee,
   getEmployees,
-  getEmployee, 
-  editEmployee, 
-  removeEmployee, 
-  searchEmployee, 
+  getEmployee,
+  editEmployee,
+  removeEmployee,
+  searchEmployee,
   getEmployeesPagination,
-  getSortedEmployees, 
+  getSortedEmployees,
   getEmployeesByDepartment,
- } = require("../controllers/employeeController");
+} = require("../controllers/employeeController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+router.get("/dashboard", authMiddleware, getDashboardStats);
 router.post("/", authMiddleware, addEmployee);
 router.get("/search", authMiddleware, searchEmployee);
 router.get("/pagination", authMiddleware, getEmployeesPagination);
 router.get("/sort", authMiddleware, getSortedEmployees);
-router.get("/filter",authMiddleware, getEmployeesByDepartment
-);
+router.get("/filter", authMiddleware, getEmployeesByDepartment);
 router.get("/", authMiddleware, getEmployees);
 router.get("/:id", authMiddleware, getEmployee);
 router.put("/:id", authMiddleware, editEmployee);
