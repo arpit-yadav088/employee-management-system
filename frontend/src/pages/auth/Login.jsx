@@ -13,31 +13,24 @@ function Login() {
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await api.post("/auth/login", formData);
+    try {
+      const response = await api.post("/auth/login", formData);
 
-    localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", response.data.token);
 
-    alert(response.data.message);
+      alert(response.data.message);
 
-    navigate("/dashboard");
-
-  } catch (error) {
-
-    alert(
-      error.response?.data?.message || "Login Failed"
-    );
-
-  }
-};
+      navigate("/dashboard");
+    } catch (error) {
+      alert(error.response?.data?.message || "Login Failed");
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
@@ -69,9 +62,7 @@ const handleSubmit = async (e) => {
             placeholder="Enter your password"
           />
 
-          <Button type="submit">
-            Login
-          </Button>
+          <Button type="submit">Login</Button>
         </form>
 
         <p className="mt-5 text-center text-sm">

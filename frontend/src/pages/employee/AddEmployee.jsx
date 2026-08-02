@@ -13,24 +13,16 @@ function AddEmployee() {
       alert("Employee Added Successfully");
 
       navigate("/employees");
-
     } catch (error) {
-      alert(
-        error.response?.data?.message ||
-        "Something went wrong"
-      );
+      alert(error.response?.data?.message || "Something went wrong");
     }
   };
 
   return (
     <Layout>
-      <h1 className="mb-6 text-3xl font-bold">
-        Add Employee
-      </h1>
+      <h1 className="mb-6 text-3xl font-bold">Add Employee</h1>
 
-      <EmployeeForm
-        onSubmit={handleAddEmployee}
-      />
+      <EmployeeForm onSubmit={handleAddEmployee} />
     </Layout>
   );
 }

@@ -38,11 +38,27 @@ const addEmployee = async (req, res) => {
 
 const getEmployees = async (req, res) => {
   try {
-    const employees = await getAllEmployees();
+    let { page = 1, limit = 5, search = "", department = "" } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+
+    const offset = (page - 1) * limit;
+
+    const result = await getAllEmployees(
+      page,
+      limit,
+      offset,
+      search.trim(),
+      department.trim()
+    );
+
     return res.status(200).json({
       success: true,
-      count: employees.length,
-      employees,
+      employees: result.employees,
+      totalEmployees: result.totalEmployees,
+      totalPages: result.totalPages,
+      currentPage: page,
     });
   } catch (error) {
     return res.status(500).json({
@@ -51,6 +67,7 @@ const getEmployees = async (req, res) => {
     });
   }
 };
+
 
 const getEmployee = async (req, res) => {
   try {
@@ -278,7 +295,15 @@ const getEmployeesByDepartment = async (req, res) => {
 
 const getDashboardStats = async (req, res) => {
   try {
-    const employees = await getAllEmployees();
+    const result = await getAllEmployees(
+      1,                  // page
+      1000000,            // limit (sab employees lane ke liye)
+      0,                  // offset
+      "",                 // search
+      ""                  // department
+    );
+
+    const employees = result.employees;
 
     const totalEmployees = employees.length;
 
@@ -288,7 +313,7 @@ const getDashboardStats = async (req, res) => {
 
     const totalSalary = employees.reduce(
       (sum, emp) => sum + Number(emp.salary),
-      0,
+      0
     );
 
     return res.status(200).json({
