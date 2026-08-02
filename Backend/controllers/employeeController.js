@@ -58,16 +58,18 @@ const getEmployee = async (req, res) => {
 
     const employee = await getEmployeeById(id);
 
-    if (employee.length === 0) {
+    if (!employee) {
       return res.status(404).json({
         success: false,
         message: "Employee Not Found",
       });
     }
+
     return res.status(200).json({
       success: true,
-      employee: employee[0],
+      employee,
     });
+
   } catch (error) {
     return res.status(500).json({
       success: false,

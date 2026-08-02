@@ -13,32 +13,61 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-         <Dashboard />
-        </ProtectedRoute>} />
-      <Route path="/employees" element={
-        <ProtectedRoute>
-          <Employees />
-        </ProtectedRoute>
-        } />
-      <Route path="/employees/add" element={
-        <ProtectedRoute>
-          <AddEmployee />
-        </ProtectedRoute>
-        } />
-      <Route path="/employees/edit/:id" element={
-        <ProtectedRoute>
-          <EditEmployee />
-        </ProtectedRoute>
-        } />
       <Route
-       path="/employees"
-       element={
-      <ProtectedRoute>
-      <Employees />
-      </ProtectedRoute>
-      }
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute>
+            <Employees />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/add"
+        element={
+          <ProtectedRoute>
+            <AddEmployee />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/edit/:id"
+        element={
+          <ProtectedRoute>
+            <EditEmployee />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute>
+            <Employees />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/add"
+        element={
+          <ProtectedRoute>
+            <AddEmployee />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/edit/:id"
+        element={
+          <ProtectedRoute>
+            <EditEmployee />
+          </ProtectedRoute>
+        }
       />
     </Routes>
   );
