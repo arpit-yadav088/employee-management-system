@@ -136,6 +136,31 @@ const editEmployee = async (req, res) => {
   }
 };
 
+// const removeEmployee = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const result = await deleteEmployee(id);
+
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Employee Not Found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Employee Deleted Successfully",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 const removeEmployee = async (req, res) => {
   try {
     const { id } = req.params;
@@ -145,14 +170,15 @@ const removeEmployee = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({
         success: false,
-        message: "Employee Not Found",
+        message: "Employee not found",
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Employee Deleted Successfully",
+      message: "Employee deleted successfully",
     });
+
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -296,11 +322,11 @@ const getEmployeesByDepartment = async (req, res) => {
 const getDashboardStats = async (req, res) => {
   try {
     const result = await getAllEmployees(
-      1,                  // page
-      1000000,            // limit (sab employees lane ke liye)
-      0,                  // offset
-      "",                 // search
-      ""                  // department
+      1,                  
+      1000000,            
+      0,                 
+      "",                 
+      ""                  
     );
 
     const employees = result.employees;

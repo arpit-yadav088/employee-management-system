@@ -86,14 +86,26 @@ const updateEmployee = async (id, name, email, phone, department, salary) => {
   return result;
 };
 
+// const deleteEmployee = async (id) => {
+//   const sql = `
+//     DELETE FROM employees
+//     WHERE id = ?
+//   `;
+//   const [result] = await db.query(sql, [id]);
+
+//   return result;
+// };
+
 const deleteEmployee = async (id) => {
-  const sql = `
-    DELETE FROM employees
-    WHERE id = ?
-  `;
-  const [result] = await db.query(sql, [id]);
+  const query = "DELETE FROM employees WHERE id = ?";
+
+  const [result] = await db.query(query, [id]);
 
   return result;
+};
+
+module.exports = {
+  deleteEmployee,
 };
 
 const searchEmployees = async (search) => {

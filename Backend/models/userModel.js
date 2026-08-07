@@ -1,12 +1,13 @@
 const db = require("../config/db");
 
-const createUser = (name, email, hashedPassword, callback) => {
+const createUser = async(name, email, hashedPassword) => {
   const sql = `
     INSERT INTO users (name, email, password)
     VALUES (?, ?, ?)
   `;
 
-  db.query(sql, [name, email, hashedPassword], callback);
+  const [results] = await db.query(sql, [name, email, hashedPassword]);
+  return results;
 };
 
 const findUserByEmail = async (email) => {
@@ -25,8 +26,16 @@ const findUserById = async (id) => {
   return rows;
 };
 
+const deleteEmployee = async (id) => {
+  const sql = "DELETE FROM employees WHERE id = ?";
+
+  const [result] = await db.query(sql, [id]);
+  return result;
+};
+
 module.exports = {
   createUser,
   findUserByEmail,
   findUserById,
+  deleteEmployee,
 };

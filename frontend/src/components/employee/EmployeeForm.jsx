@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "../common/Button";
 
-function EmployeeForm({ onSubmit, initialData = {} }) {
+function EmployeeForm({ onSubmit, initialData }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,21 +11,23 @@ function EmployeeForm({ onSubmit, initialData = {} }) {
   });
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name || "",
-        email: initialData.email || "",
-        phone: initialData.phone || "",
-        department: initialData.department || "",
-        salary: initialData.salary || "",
-      });
-    }
+    if (!initialData) return;
+
+    setFormData({
+      name: initialData.name || "",
+      email: initialData.email || "",
+      phone: initialData.phone || "",
+      department: initialData.department || "",
+      salary: initialData.salary || "",
+    });
   }, [initialData]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -92,10 +94,12 @@ function EmployeeForm({ onSubmit, initialData = {} }) {
       />
 
       <Button type="submit">
-        {initialData?.id ? "Update Employee" : "Add Employee"}
+        {initialData ? "Update Employee" : "Add Employee"}
       </Button>
+
     </form>
   );
 }
 
 export default EmployeeForm;
+

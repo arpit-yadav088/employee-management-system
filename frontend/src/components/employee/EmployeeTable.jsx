@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function EmployeeTable({ employees }) {
+function EmployeeTable({ employees, onDelete }) {
   const navigate = useNavigate();
 
   return (
@@ -34,8 +34,14 @@ function EmployeeTable({ employees }) {
                   Edit
                 </button>
 
-                <button
+                {/* <button
                   onClick={() => alert(employee.id)}
+                  className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
+                >
+                  Delete
+                </button> */}
+                <button
+                  onClick={() => onDelete(employee.id)}
                   className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700"
                 >
                   Delete
